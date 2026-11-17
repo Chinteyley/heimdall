@@ -158,7 +158,7 @@ func (p *Plugin) complete(ctx context.Context, system, user, schemaName string, 
 			} `json:"message"`
 		} `json:"choices"`
 	}
-	err := postJSON(ctx, p.cfg.GatewayURL+"/v1/chat/completions", headers, map[string]any{
+	body := map[string]any{
 		"model": p.cfg.CheckModel,
 		"messages": []map[string]string{
 			{"role": "system", "content": system},
@@ -168,7 +168,11 @@ func (p *Plugin) complete(ctx context.Context, system, user, schemaName string, 
 			"type":        "json_schema",
 			"json_schema": map[string]any{"name": schemaName, "strict": true, "schema": schema},
 		},
-	}, &resp)
+	}
+	if p.cfg.ReasoningEffort != "" {
+		body["reasoning_effort"] = p.cfg.ReasoningEffort
+	}
+	err := postJSON(ctx, p.cfg.GatewayURL+"/v1/chat/completions", headers, body, &resp)
 	if err != nil {
 		return err
 	}

@@ -118,7 +118,7 @@ Then add it to `config.json`:
       "tavily_api_key": "env.TAVILY_API_KEY",
       "gateway_url": "http://127.0.0.1:8080",
       "gateway_headers": { "x-bf-vk": "env.BIFROST_VK_CHECKS" },
-      "check_model": "openai/gpt-5.4-mini"
+      "check_model": "openai/gpt-6-luna"
     }
   }]
 }
@@ -131,7 +131,8 @@ Then add it to `config.json`:
 | `tavily_api_key` | `$TAVILY_API_KEY` | Required. `env.NAME` values are read from the environment. |
 | `gateway_url` | `http://127.0.0.1:8080` | Where Heimdall sends its own model calls (this Bifrost). |
 | `gateway_headers` | `{}` | Added to those calls, such as a virtual key. |
-| `check_model` | `openai/gpt-5.4-mini` | Model that extracts and judges claims. |
+| `check_model` | `openai/gpt-6-luna` | Model that extracts and judges claims. |
+| `reasoning_effort` | unset | Sent as `reasoning_effort` on the check calls; the sample config uses `low`. |
 | `default_mode` | `off` | Mode when no header is sent. |
 | `max_claims` | `6` | Claims checked per answer. |
 | `max_results` | `5` | Tavily results per claim. |
@@ -199,7 +200,7 @@ The unit tests cover the scoring formula and inline annotation. The integration 
 
 - Streaming responses are not checked.
 - Only OpenAI-format chat completions (`/v1/chat/completions`) are checked today; the Anthropic- and GenAI-format routes are next.
-- A check adds one extraction call, then two searches and one verdict call per claim, with claims in parallel: about 7–9 s with `gpt-5.4-mini`. Report mode can be moved off the response path in a later version.
+- A check adds one extraction call, then two searches and one verdict call per claim, with claims in parallel: about 6–10 s with `gpt-6-luna` at low reasoning effort. Report mode can be moved off the response path in a later version.
 - The verdict is only as good as the search results; an unverifiable claim says so rather than guessing.
 
 ## License

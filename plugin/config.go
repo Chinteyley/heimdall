@@ -22,6 +22,9 @@ type Config struct {
 	GatewayHeaders map[string]string `json:"gateway_headers"`
 	// CheckModel is the Bifrost model ("provider/model") that extracts and judges claims.
 	CheckModel string `json:"check_model"`
+	// ReasoningEffort is sent as reasoning_effort on the check calls when set;
+	// lower effort trades some deliberation for latency on reasoning models.
+	ReasoningEffort string `json:"reasoning_effort"`
 	// DefaultMode applies when a request carries no x-heimdall header.
 	DefaultMode Mode `json:"default_mode"`
 	// MaxClaims caps how many claims one answer is checked for.
@@ -43,7 +46,7 @@ func defaultConfig() Config {
 	return Config{
 		TavilyURL:      "https://api.tavily.com",
 		GatewayURL:     "http://127.0.0.1:8080",
-		CheckModel:     "openai/gpt-5.4-mini",
+		CheckModel:     "openai/gpt-6-luna",
 		DefaultMode:    ModeOff,
 		MaxClaims:      6,
 		MaxResults:     5,
