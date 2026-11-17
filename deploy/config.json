@@ -1,0 +1,46 @@
+{
+  "$schema": "https://www.getbifrost.ai/schema",
+  "client": { "enforce_auth_on_inference": true, "enable_logging": true },
+  "providers": {
+    "openai": {
+      "keys": [{ "id": "openai-main", "name": "openai", "value": "env.OPENAI_API_KEY", "weight": 1, "models": ["*"] }],
+      "network_config": { "default_request_timeout_in_seconds": 120 }
+    }
+  },
+  "governance": {
+    "virtual_keys": [
+      {
+        "id": "vk-app",
+        "name": "app",
+        "description": "Traffic from the apps behind the gateway",
+        "value": "env.BIFROST_VK_APP",
+        "is_active": true,
+        "provider_configs": [{ "provider": "openai", "key_ids": ["openai-main"], "allowed_models": ["*"], "weight": 1 }]
+      },
+      {
+        "id": "vk-heimdall",
+        "name": "heimdall-checks",
+        "description": "Heimdall's own claim extraction and verdict calls, on a budget of their own",
+        "value": "env.BIFROST_VK_CHECKS",
+        "is_active": true,
+        "provider_configs": [{ "provider": "openai", "key_ids": ["openai-main"], "allowed_models": ["gpt-5.4-mini"], "weight": 1 }]
+      }
+    ],
+    "budgets": [{ "id": "budget-heimdall", "virtual_key_id": "vk-heimdall", "max_limit": 2, "reset_duration": "1d" }]
+  },
+  "plugins": [
+    {
+      "enabled": true,
+      "name": "heimdall",
+      "path": "/app/plugins/heimdall.so",
+      "config": {
+        "tavily_api_key": "env.TAVILY_API_KEY",
+        "gateway_url": "http://127.0.0.1:8080",
+        "gateway_headers": { "x-bf-vk": "env.BIFROST_VK_CHECKS" },
+        "check_model": "openai/gpt-5.4-mini",
+        "search_depth": "advanced",
+        "default_mode": "off"
+      }
+    }
+  ]
+}

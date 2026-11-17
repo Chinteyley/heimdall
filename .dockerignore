@@ -1,0 +1,4 @@
+console
+.env
+.git
+**/node_modules

@@ -1,0 +1,10 @@
+services:
+  bifrost:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    image: heimdall-bifrost
+    ports: ["8080:8080"]
+    env_file: .env
+    volumes:
+      - ./deploy/config.json:/app/data/config.json:ro
